@@ -2,6 +2,14 @@
 terraform {
   required_version = ">= 1.5.0"
 
+  cloud {
+    organization = "sivanna-devops"
+
+    workspaces {
+      name = "devops-final-project"
+    }
+  }
+
   required_providers {
     aws = {
       source  = "hashicorp/aws"
@@ -64,15 +72,17 @@ resource "aws_security_group" "dashboard" {
 }
 
 resource "aws_instance" "dashboard" {
-  ami                    = data.aws_ami.ubuntu.id
-  instance_type          = var.instance_type
-  key_name               = var.key_name
-  vpc_security_group_ids = [aws_security_group.dashboard.id]
+  ami                         = data.aws_ami.ubuntu.id
+  instance_type               = var.instance_type
+  key_name                    = var.key_name
+  associate_public_ip_address = true
+  vpc_security_group_ids      = [aws_security_group.dashboard.id]
 
   root_block_device {
     volume_size = 16
     volume_type = "gp3"
   }
+
 
   user_data = <<-EOF
     #!/bin/bash
@@ -80,8 +90,11 @@ resource "aws_instance" "dashboard" {
 
     apt-get update
     apt-get install -y docker.io docker-compose-v2
+
     systemctl enable --now docker
     usermod -aG docker ubuntu
+
+    touch /var/tmp/docker-ready
   EOF
 
   tags = {

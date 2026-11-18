@@ -13,3 +13,9 @@ output "dashboard_url" {
   description = "Dashboard URL"
   value       = "http://${aws_instance.dashboard.public_ip}:3000"
 }
+
+
+output "security_group_id" {
+  description = "Security Group ID for temporary GitHub Actions SSH access"
+  value       = aws_security_group.dashboard.id
+}
