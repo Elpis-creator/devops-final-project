@@ -83,8 +83,7 @@ resource "aws_instance" "dashboard" {
     volume_type = "gp3"
   }
 
-
-  user_data = <<-EOF
+  user_data = replace(<<-EOF
     #!/bin/bash
     set -eux
 
@@ -96,6 +95,8 @@ resource "aws_instance" "dashboard" {
 
     touch /var/tmp/docker-ready
   EOF
+  , "\r\n", "\n")
+
 
   tags = {
     Name    = "devops-final-dashboard"
